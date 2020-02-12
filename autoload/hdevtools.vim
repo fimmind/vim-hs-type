@@ -66,8 +66,6 @@ function! s:infowin_create(window_title)
   let s:hdevtools_info_buffer = bufnr("%")
 
   " Key bindings for the Info Window
-  nnoremap <silent> <buffer> <CR> :call hdevtools#infowin_jump()<CR>
-  nnoremap <silent> <buffer> <C-CR> :call hdevtools#infowin_jump('sp')<CR>
   nnoremap <silent> <buffer> <ESC> :call hdevtools#infowin_leave()<CR>
 
   " perform cleanup using an autocmd to ensure we don't get caught out by some
