@@ -159,12 +159,12 @@ endfunction
 " Code taken from Command-T ends here
 " ----------------------------------------------------------------------------
 
-function! hdevtools#highlight(line1, col1, line2, col2)
-  call hdevtools#clear_highlight()
+function! s:highlight(line1, col1, line2, col2)
+  call s:clear_highlight()
   let w:hdevtools_type_matchid = matchadd('Visual', '\%' . a:line1 . 'l\%' . a:col1 . 'c\_.*\%' . a:line2 . 'l\%' . a:col2 . 'c')
 endfunction
 
-function! hdevtools#clear_highlight()
+function! s:clear_highlight()
   if exists('w:hdevtools_type_matchid')
     call matchdelete(w:hdevtools_type_matchid)
     unlet w:hdevtools_type_matchid
