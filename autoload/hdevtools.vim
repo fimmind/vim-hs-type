@@ -189,12 +189,12 @@ endfunction
 
 function! hdevtools#print_error(msg)
   echohl ErrorMsg
-  echomsg a:msg
+  echomsg "vim-hs-type: " . a:msg
   echohl None
 endfunction
 
 function! hdevtools#print_warning(msg)
   echohl WarningMsg
-  echomsg a:msg
+  echomsg "vim-hs-type: " . a:msg
   echohl None
 endfunction

@@ -9,14 +9,14 @@ if !exists('s:has_hdevtools')
   " For stack support, vim must be started in the directory containing stack.yaml
   if exists('g:hdevtools_stack') && g:hdevtools_stack && filereadable("stack.yaml")
     if !executable('stack')
-      call hdevtools#print_error('hdevtools: stack.yaml found, but stack is not executable!')
+      call hdevtools#print_error('stack.yaml found, but stack is not executable!')
       finish
     endif
     let g:hdevtools_exe = 'stack exec --silent --no-ghc-package-path --package hdevtools hdevtools --'
   elseif executable('hdevtools')
     let g:hdevtools_exe = 'hdevtools'
   else
-    call hdevtools#print_error('hdevtools: hdevtools is not executable!')
+    call hdevtools#print_error('hdevtools is not executable!')
     finish
   endif
 
