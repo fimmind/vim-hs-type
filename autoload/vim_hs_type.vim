@@ -149,7 +149,6 @@ function! s:set_global_settings()
     exe "let s:original_settings[key] = &" . key
     exe "let &" . key " = s:global_settings[key]"
   endfor
-  echo s:original_settings
 endfunction
 
 function! s:restore_global_settings()
