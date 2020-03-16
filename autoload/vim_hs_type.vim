@@ -97,19 +97,8 @@ endfunction
 let s:hdevtools_info_buffer = -1
 
 function! s:infowin_create(window_title)
-  let s:initial_window = winnr()
   call s:window_dimensions_save()
-
-  " The following settings are global, so they must be saved before being
-  " changed so that they can be later restored.
-  " If you add to the code below changes to additional global settings, then
-  " you must also appropriately modify s:settings_save and s:settings_restore
-  call s:settings_save()
-  set noinsertmode     " don't make Insert mode the default
-  set report=9999      " don't show 'X lines changed' reports
-  set sidescroll=0     " don't sidescroll in jumps
-  set sidescrolloff=0  " don't sidescroll automatically
-  set noequalalways    " don't auto-balance window sizes
+  call s:set_global_settings()
 
   " The following settings are local so they don't have to be saved
   exe 'silent! botright 1split' fnameescape(a:window_title)
@@ -143,25 +132,33 @@ function! s:infowin_create(window_title)
   autocmd BufUnload <buffer> silent! call s:infowin_unload()
 endfunction
 
-function! s:settings_save()
-  " The following must be in sync with settings_restore
-  let s:original_settings = [
-        \ &report,
-        \ &sidescroll,
-        \ &sidescrolloff,
-        \ &equalalways,
-        \ &insertmode
-        \ ]
+" The following settings are global, so they must be saved before being
+" changed so that they can be later restored. Therefore s:set_global_settings
+" and s:restore_global_settings are used
+let s:global_settings = {
+      \ "insertmode": 0,
+      \ "report": 9999,
+      \ "sidescroll": 0,
+      \ "sidescrolloff": 0,
+      \ "equalalways": 0
+      \ }
+
+let s:original_settings = {}
+function! s:set_global_settings()
+  for key in keys(s:global_settings)
+    exe "let s:original_settings[key] = &" . key
+    exe "let &" . key " = s:global_settings[key]"
+  endfor
+  echo s:original_settings
 endfunction
 
-function! s:settings_restore()
-  " The following must be in sync with settings_save
-  let &report = s:original_settings[0]
-  let &sidescroll = s:original_settings[1]
-  let &sidescrolloff = s:original_settings[2]
-  let &equalalways = s:original_settings[3]
-  let &insertmode = s:original_settings[4]
+function! s:restore_global_settings()
+  for key in keys(s:original_settings)
+    exe "let &" . key " = s:original_settings[key]"
+  endfor
+  let original_settings = {}
 endfunction
+
 
 function! s:window_dimensions_save()
   " Each element of the list s:window_dimensions is a list of 3 integers of
@@ -215,8 +212,7 @@ endfunction
 
 function! s:infowin_unload()
   call s:window_dimensions_restore()
-  call s:settings_restore()
-  exe s:initial_window . "wincmd w"
+  call s:restore_global_settings()
 endfunction
 
 function! s:infowin_close()
