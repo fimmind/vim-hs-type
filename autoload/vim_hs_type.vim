@@ -229,10 +229,10 @@ function! s:highlight(range)
   let s:hdevtools_type_matchid =
         \ matchadd(
         \   s:config['highlight_group']
-        \   , '\%' . l:line1 .
-        \     'l\%' . l:col1 .
-        \     'c\_.*\%' . l:line2 .
-        \     'l\%' . l:col2 . 'c'
+        \   , '\%' . l:line1 . 'l\%'
+        \          . l:col1  . 'c\_.*\%'
+        \          . l:line2 . 'l\%'
+        \          . l:col2  . 'c'
         \   , 10
         \   , -1
         \   , {'window': s:sourse_win_id})
