@@ -1,4 +1,46 @@
-let s:hdevtools_info_buffer = -1
+" Messaging
+" ================================================
+function! s:print_error(msg)
+  echohl ErrorMsg
+  echomsg "vim-hs-type: " . a:msg
+  echohl None
+endfunction
+
+function! s:print_warning(msg)
+  echohl WarningMsg
+  echomsg "vim-hs-type: " . a:msg
+  echohl None
+endfunction
+
+function! s:print_message(msg)
+  echomsg "vim-hs-type: " . a:msg
+endfunction
+
+" Read config
+" ================================================
+let s:config = {
+      \ 'max_height': 12,
+      \ 'dynamic_height': 1,
+      \ 'path_to_hdevtools': 'hdevtools',
+      \ 'hdevtools_args': [],
+      \ 'expression_obj': 'e',
+      \ 'highlight_group': 'MatchParen'
+      \ }
+
+for key in keys(s:config)
+  if exists("g:vim_hs_type_conf['".key."']")
+    let s:config[key] = g:vim_hs_type_conf[key]
+  endif
+endfor
+
+let s:hdevtools_exe = s:config['path_to_hdevtools']
+
+" Prepare hdevtools
+" ================================================
+if !executable(s:hdevtools_exe)
+  call s:print_error(s:hdevtools_exe . ' is not executable!')
+  finish
+endif
 
 function! s:shutdown()
   let l:cmd = s:build_hdevtools_command_bare('admin', '--stop-server')
@@ -6,7 +48,7 @@ function! s:shutdown()
   let l:dummy = system(l:cmd)
 endfunction
 
-function! vim_hs_type#prepare_shutdown()
+function! s:prepare_shutdown()
   let l:cmd = s:build_hdevtools_command_bare('admin', '--status')
   " Must save the output in order for the command to actually run:
   let l:dummy = system(l:cmd)
@@ -24,12 +66,35 @@ function! vim_hs_type#prepare_shutdown()
   endif
 endfunction
 
+autocmd FileType haskell call s:prepare_shutdown()
+
+" Building hdevtools commands
+" ================================================
+let s:hdevtools_args =
+      \ join(map(s:config['hdevtools_args'], 'shellescape(v:val)'), ' ')
+
+function! s:build_hdevtools_command(command, args)
+  let l:cmd = s:hdevtools_exe . ' ' . a:command . ' '
+  let l:cmd = l:cmd . s:hdevtools_args . ' '
+  let l:cmd = l:cmd . a:args
+  return l:cmd
+endfunction
+
+" Does not include s:config['hdevtools_options']
+function! s:build_hdevtools_command_bare(command, args)
+  let l:cmd = s:hdevtools_exe . ' ' . a:command . ' '
+  let l:cmd = l:cmd . a:args
+  return l:cmd
+endfunction
+
 " ----------------------------------------------------------------------------
 " The window code below was adapted from the 'Command-T' plugin, with major
 " changes (and translated from the original Ruby)
 "
 " Command-T:
 "     https://wincent.com/products/command-t/
+"
+let s:hdevtools_info_buffer = -1
 
 function! s:infowin_create(window_title)
   let s:initial_window = winnr()
@@ -161,27 +226,21 @@ endfunction
 " Code taken from Command-T ends here
 " ----------------------------------------------------------------------------
 
-function! s:build_hdevtools_command(command, args)
-  let l:cmd = g:hdevtools_exe . ' ' . a:command . ' '
-  let l:cmd = l:cmd . get(g:, 'hdevtools_options', '') . ' '
-  let l:cmd = l:cmd . a:args
-  return l:cmd
-endfunction
-
-" Does not include g:hdevtools_options
-function! s:build_hdevtools_command_bare(command, args)
-  let l:cmd = g:hdevtools_exe . ' ' . a:command . ' '
-  let l:cmd = l:cmd . a:args
-  return l:cmd
-endfunction
-
-
 let s:source_win_id = -1
 
 function! s:highlight(range)
   call s:clear_highlight()
   let [l:line1, l:col1, l:line2, l:col2] = a:range
-  let s:hdevtools_type_matchid = matchadd('MatchParen', '\%' . l:line1 . 'l\%' . l:col1 . 'c\_.*\%' . l:line2 . 'l\%' . l:col2 . 'c', 10, -1, {'window': s:sourse_win_id})
+  let s:hdevtools_type_matchid =
+        \ matchadd(
+        \   s:config['highlight_group']
+        \   , '\%' . l:line1 .
+        \     'l\%' . l:col1 .
+        \     'c\_.*\%' . l:line2 .
+        \     'l\%' . l:col2 . 'c'
+        \   , 10
+        \   , -1
+        \   , {'window': s:sourse_win_id})
   redraw!
 endfunction
 
@@ -199,18 +258,18 @@ function vim_hs_type#type()
   call s:clear_highlight()
 
   if &l:modified
-    call vim_hs_type#print_error('the buffer has been modified but not written')
+    call s:print_error('the buffer has been modified but not written')
     return
   endif
 
-  call vim_hs_type#print_message("Getting types, wait...")
+  call s:print_message("Getting types, wait...")
 
   let l:line = line('.')
   let l:col = col('.')
 
   let l:file = expand('%')
   if l:file ==# ''
-    call vim_hs_type#print_warning("current version of plugin doesn't support running on an unnamed buffer.")
+    call s:print_warning("current version of plugin doesn't support running on an unnamed buffer.")
     return
   endif
   let l:cmd = s:build_hdevtools_command('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
@@ -218,7 +277,7 @@ function vim_hs_type#type()
 
   if v:shell_error != 0
     for l:error_line in split(l:output, '\n')
-      call vim_hs_type#print_error(l:error_line)
+      call s:print_error(l:error_line)
     endfor
     return
   endif
@@ -235,7 +294,7 @@ function vim_hs_type#type()
 
   let l:len = len(l:types)
   if l:len == 0
-    call vim_hs_type#print_message("Expression under cursor has not type, aborting...")
+    call s:print_message("Expression under cursor has not type, aborting...")
     return
   endif
 
@@ -248,29 +307,16 @@ function vim_hs_type#type()
   normal! Gdd
   setlocal nomodifiable
 
-  " TODO: set width to g:vim_hs_type_conf['max_height'], if latter is smaller then
-  " l:len or if g:vim_hs_type_conf['dynamic_height'] == 0
-  exe "normal! \<C-w>" . l:len . "_"
+  if s:config['dynamic_height'] && l:len <= s:config['max_height']
+    let l:info_win_height = l:len
+  else
+    let l:info_win_height = s:config['max_height']
+  endif
+  exe "normal! \<C-w>" . l:info_win_height . "_"
 
   normal! gg
   autocmd BufLeave <buffer> call s:clear_highlight()
 
   " TODO: don't rehighlight if line('.') didn't changed
   autocmd CursorMoved <buffer> call s:highlight(s:types_ranges[line('.') - 1])
-endfunction
-
-function! vim_hs_type#print_error(msg)
-  echohl ErrorMsg
-  echomsg "vim-hs-type: " . a:msg
-  echohl None
-endfunction
-
-function! vim_hs_type#print_warning(msg)
-  echohl WarningMsg
-  echomsg "vim-hs-type: " . a:msg
-  echohl None
-endfunction
-
-function! vim_hs_type#print_message(msg)
-  echomsg "vim-hs-type: " . a:msg
 endfunction
