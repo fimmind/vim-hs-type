@@ -94,7 +94,7 @@ endfunction
 " Command-T:
 "     https://wincent.com/products/command-t/
 "
-let s:hdevtools_info_buffer = -1
+let s:info_buffer = -1
 
 function! s:infowin_create(window_title)
   call s:window_dimensions_save()
@@ -118,8 +118,8 @@ function! s:infowin_create(window_title)
   setlocal colorcolumn=0     " dot't highlight any column
 
   " Save the buffer number of the Info Window for later
-  let s:hdevtools_info_buffer = bufnr("%")
-  let s:hdevtools_info_window_id = win_getid()
+  let s:info_buffer = bufnr("%")
+  let s:info_window_id = win_getid()
 
   " Key bindings for the Info Window
   nnoremap <silent> <buffer> <ESC> :call vim_hs_type#infowin_leave()<CR>
@@ -206,7 +206,7 @@ endfunction
 function! vim_hs_type#infowin_leave()
   call s:infowin_close()
   call s:infowin_unload()
-  let s:hdevtools_info_buffer = -1
+  let s:info_buffer = -1
 endfunction
 
 function! s:infowin_unload()
@@ -215,7 +215,7 @@ function! s:infowin_unload()
 endfunction
 
 function! s:infowin_close()
-  exe "silent! bunload!" s:hdevtools_info_buffer
+  exe "silent! bunload!" s:info_buffer
 endfunction
 
 " Code taken from Command-T ends here
@@ -226,7 +226,7 @@ let s:source_win_id = -1
 function! s:highlight(range)
   call s:clear_highlight()
   let [l:line1, l:col1, l:line2, l:col2] = a:range
-  let s:hdevtools_type_matchid =
+  let s:type_matchid =
         \ matchadd(
         \   s:config['highlight_group']
         \   , '\%' . l:line1 . 'l\%'
@@ -240,11 +240,11 @@ function! s:highlight(range)
 endfunction
 
 function! s:clear_highlight()
-  if exists('s:hdevtools_type_matchid')
+  if exists('s:type_matchid')
     call win_gotoid(s:sourse_win_id)
-    call matchdelete(s:hdevtools_type_matchid)
-    unlet s:hdevtools_type_matchid
-    call win_gotoid(s:hdevtools_info_window_id)
+    call matchdelete(s:type_matchid)
+    unlet s:type_matchid
+    call win_gotoid(s:info_window_id)
     redraw!
   endif
 endfunction
