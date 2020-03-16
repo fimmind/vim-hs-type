@@ -1,13 +1,13 @@
 let s:hdevtools_info_buffer = -1
 
 function! s:shutdown()
-  let l:cmd = hdevtools#build_command_bare('admin', '--stop-server')
+  let l:cmd = s:build_hdevtools_command_bare('admin', '--stop-server')
   " Must save the output in order for the command to actually run:
   let l:dummy = system(l:cmd)
 endfunction
 
-function! hdevtools#prepare_shutdown()
-  let l:cmd = hdevtools#build_command_bare('admin', '--status')
+function! vim_hs_type#prepare_shutdown()
+  let l:cmd = s:build_hdevtools_command_bare('admin', '--status')
   " Must save the output in order for the command to actually run:
   let l:dummy = system(l:cmd)
 
@@ -68,13 +68,13 @@ function! s:infowin_create(window_title)
   let s:hdevtools_info_window_id = win_getid()
 
   " Key bindings for the Info Window
-  nnoremap <silent> <buffer> <ESC> :call hdevtools#infowin_leave()<CR>
+  nnoremap <silent> <buffer> <ESC> :call vim_hs_type#infowin_leave()<CR>
 
   " perform cleanup using an autocmd to ensure we don't get caught out by some
   " unexpected means of dismissing or leaving the Info Window (eg. <C-W q>,
   " <C-W k> etc)
   autocmd! * <buffer>
-  autocmd BufLeave <buffer> silent! call hdevtools#infowin_leave()
+  autocmd BufLeave <buffer> silent! call vim_hs_type#infowin_leave()
   autocmd BufUnload <buffer> silent! call s:infowin_unload()
 endfunction
 
@@ -108,7 +108,7 @@ function! s:window_dimensions_save()
 endfunction
 
 " Used in s:window_dimensions_restore for sorting the windows
-function! hdevtools#compare_window(i1, i2)
+function! s:compare_windows(i1, i2)
   " Compare the window heights:
   if a:i1[2] < a:i2[2]
     return 1
@@ -127,7 +127,7 @@ endfunction
 
 function! s:window_dimensions_restore()
   " sort from tallest to shortest, tie-breaking on window width
-  call sort(s:window_dimensions, "hdevtools#compare_window")
+  call sort(s:window_dimensions, "s:compare_windows")
 
   " starting with the tallest ensures that there are no constraints preventing
   " windows on the side of vertical splits from regaining their original full
@@ -142,7 +142,7 @@ function! s:window_dimensions_restore()
   endfor
 endfunction
 
-function! hdevtools#infowin_leave()
+function! vim_hs_type#infowin_leave()
   call s:infowin_close()
   call s:infowin_unload()
   let s:hdevtools_info_buffer = -1
@@ -161,7 +161,7 @@ endfunction
 " Code taken from Command-T ends here
 " ----------------------------------------------------------------------------
 
-function! hdevtools#build_command(command, args)
+function! s:build_hdevtools_command(command, args)
   let l:cmd = g:hdevtools_exe . ' ' . a:command . ' '
   let l:cmd = l:cmd . get(g:, 'hdevtools_options', '') . ' '
   let l:cmd = l:cmd . a:args
@@ -169,7 +169,7 @@ function! hdevtools#build_command(command, args)
 endfunction
 
 " Does not include g:hdevtools_options
-function! hdevtools#build_command_bare(command, args)
+function! s:build_hdevtools_command_bare(command, args)
   let l:cmd = g:hdevtools_exe . ' ' . a:command . ' '
   let l:cmd = l:cmd . a:args
   return l:cmd
@@ -195,30 +195,30 @@ function! s:clear_highlight()
   endif
 endfunction
 
-function hdevtools#type()
+function vim_hs_type#type()
   call s:clear_highlight()
 
   if &l:modified
-    call hdevtools#print_error('the buffer has been modified but not written')
+    call vim_hs_type#print_error('the buffer has been modified but not written')
     return
   endif
 
-  call hdevtools#print_message("Getting types, wait...")
+  call vim_hs_type#print_message("Getting types, wait...")
 
   let l:line = line('.')
   let l:col = col('.')
 
   let l:file = expand('%')
   if l:file ==# ''
-    call hdevtools#print_warning("current version of plugin doesn't support running on an unnamed buffer.")
+    call vim_hs_type#print_warning("current version of plugin doesn't support running on an unnamed buffer.")
     return
   endif
-  let l:cmd = hdevtools#build_command('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
+  let l:cmd = s:build_hdevtools_command('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
   let l:output = system(l:cmd)
 
   if v:shell_error != 0
     for l:error_line in split(l:output, '\n')
-      call hdevtools#print_error(l:error_line)
+      call vim_hs_type#print_error(l:error_line)
     endfor
     return
   endif
@@ -235,7 +235,7 @@ function hdevtools#type()
 
   let l:len = len(l:types)
   if l:len == 0
-    call hdevtools#print_message("Expression under cursor has not type, aborting...")
+    call vim_hs_type#print_message("Expression under cursor has not type, aborting...")
     return
   endif
 
@@ -259,18 +259,18 @@ function hdevtools#type()
   autocmd CursorMoved <buffer> call s:highlight(s:types_ranges[line('.') - 1])
 endfunction
 
-function! hdevtools#print_error(msg)
+function! vim_hs_type#print_error(msg)
   echohl ErrorMsg
   echomsg "vim-hs-type: " . a:msg
   echohl None
 endfunction
 
-function! hdevtools#print_warning(msg)
+function! vim_hs_type#print_warning(msg)
   echohl WarningMsg
   echomsg "vim-hs-type: " . a:msg
   echohl None
 endfunction
 
-function! hdevtools#print_message(msg)
+function! vim_hs_type#print_message(msg)
   echomsg "vim-hs-type: " . a:msg
 endfunction
