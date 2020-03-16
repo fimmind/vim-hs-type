@@ -224,9 +224,12 @@ endfunction
 let s:source_win_id = -1
 
 function! s:highlight(range)
-  call s:clear_highlight()
+  call win_gotoid(s:sourse_win_id)
+  if exists("s:matchid")
+    let l:prev_matchid = s:matchid
+  endif
   let [l:line1, l:col1, l:line2, l:col2] = a:range
-  let s:type_matchid =
+  let s:matchid =
         \ matchadd(
         \   s:config['highlight_group']
         \   , '\%' . l:line1 . 'l\%'
@@ -236,21 +239,22 @@ function! s:highlight(range)
         \   , 10
         \   , -1
         \   , {'window': s:sourse_win_id})
+  if exists("l:prev_matchid")
+    call matchdelete(l:prev_matchid)
+  endif
+  call win_gotoid(s:info_window_id)
   redraw!
 endfunction
 
-function! s:clear_highlight()
-  if exists('s:type_matchid')
-    call win_gotoid(s:sourse_win_id)
-    call matchdelete(s:type_matchid)
-    unlet s:type_matchid
-    call win_gotoid(s:info_window_id)
-    redraw!
+function! vim_hs_type#clear_highlight()
+  if exists("s:matchid")
+    call matchdelete(s:matchid)
+    unlet s:matchid
   endif
 endfunction
 
 function vim_hs_type#type()
-  call s:clear_highlight()
+  call vim_hs_type#clear_highlight()
 
   if &l:modified
     call s:print_error('the buffer has been modified but not written')
@@ -310,7 +314,7 @@ function vim_hs_type#type()
   exe "normal! \<C-w>" . l:info_win_height . "_"
 
   normal! gg
-  autocmd BufLeave <buffer> call s:clear_highlight()
+  autocmd BufLeave <buffer> call vim_hs_type#clear_highlight()
 
   " TODO: don't rehighlight if line('.') didn't changed
   autocmd CursorMoved <buffer> call s:highlight(s:types_ranges[line('.') - 1])
