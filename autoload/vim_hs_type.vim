@@ -13,6 +13,7 @@ function! s:print_warning(msg)
 endfunction
 
 function! s:print_message(msg)
+  redraw " hide previous message
   echomsg "vim-hs-type: " . a:msg
 endfunction
 
@@ -253,7 +254,7 @@ function vim_hs_type#type()
   call vim_hs_type#clear_highlight()
 
   if &l:modified
-    call s:print_error('the buffer has been modified but not written')
+    call s:print_error('The buffer has been modified but not written')
     return
   endif
 
@@ -264,7 +265,7 @@ function vim_hs_type#type()
 
   let l:file = expand('%')
   if l:file ==# ''
-    call s:print_warning("current version of plugin doesn't support running on an unnamed buffer.")
+    call s:print_warning("Current version of plugin doesn't support running on an unnamed buffer.")
     return
   endif
   let l:output = s:run_hdevtools('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
@@ -291,6 +292,8 @@ function vim_hs_type#type()
     call s:print_message("Expression under cursor has not type, aborting...")
     return
   endif
+
+  call s:print_message("Done")
 
   let s:sourse_win_id = win_getid()
 
