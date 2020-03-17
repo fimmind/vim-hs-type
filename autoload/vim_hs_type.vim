@@ -42,49 +42,37 @@ if !executable(s:hdevtools_exe)
   finish
 endif
 
-function! s:shutdown()
-  let l:cmd = s:build_hdevtools_command_bare('admin', '--stop-server')
-  " Must save the output in order for the command to actually run:
-  let l:dummy = system(l:cmd)
-endfunction
-
-function! s:prepare_shutdown()
-  let l:cmd = s:build_hdevtools_command_bare('admin', '--status')
-  " Must save the output in order for the command to actually run:
-  let l:dummy = system(l:cmd)
-
-  " Only shutdown the hdevtools server on Vim quit if the above 'status'
-  " command indicated that the hdevtools server isn't currently running: This
-  " plugin will start the server, so this plugin should be responsible for
-  " shutting it down when Vim exits.
-  "
-  " If on the other hand, the hdevtools server is already running, then we
-  " shouldn't shut it down on Vim exit, since someone else started it, so it's
-  " their problem.
-  if v:shell_error != 0
-    autocmd VimLeave * call s:shutdown()
-  endif
-endfunction
-
-autocmd FileType haskell call s:prepare_shutdown()
-
-" Building hdevtools commands
-" ================================================
 let s:hdevtools_args =
       \ join(map(s:config['hdevtools_args'], 'shellescape(v:val)'), ' ')
 
-function! s:build_hdevtools_command(command, args)
-  let l:cmd = s:hdevtools_exe . ' ' . a:command . ' '
-  let l:cmd = l:cmd . s:hdevtools_args . ' '
-  let l:cmd = l:cmd . a:args
-  return l:cmd
+let s:started_servers_dirs = []
+
+function! s:pwd()
+  return get(split(system("pwd")), 0, '')
 endfunction
 
-" Does not include s:config['hdevtools_options']
-function! s:build_hdevtools_command_bare(command, args)
-  let l:cmd = s:hdevtools_exe . ' ' . a:command . ' '
-  let l:cmd = l:cmd . a:args
-  return l:cmd
+function! s:run_hdevtools(command, args)
+  call system("hdevtools --status")
+  if v:shell_error != 0
+    " Server is not running, therfore it will by started by the next command,
+    " so we need to shutdown it on exit
+    call add(s:started_servers_dirs, s:pwd())
+  endif
+
+  let l:cmd = s:hdevtools_exe
+        \ . ' ' . a:command
+        \ . ' ' . s:hdevtools_args
+        \ . ' ' . a:args
+  return system(l:cmd)
+endfunction
+
+autocmd VimLeave * call s:shutdown_servers()
+function! s:shutdown_servers()
+  let l:work_dir = s:pwd()
+  for dir in s:started_servers_dirs
+    call system("cd " . shellescape(dir) . " && hdevtools --stop-server")
+  endfor
+  call system("cd " . shellescape(l:work_dir))
 endfunction
 
 " ----------------------------------------------------------------------------
@@ -271,8 +259,7 @@ function vim_hs_type#type()
     call s:print_warning("current version of plugin doesn't support running on an unnamed buffer.")
     return
   endif
-  let l:cmd = s:build_hdevtools_command('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
-  let l:output = system(l:cmd)
+  let l:output = s:run_hdevtools('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
 
   if v:shell_error != 0
     for l:error_line in split(l:output, '\n')
