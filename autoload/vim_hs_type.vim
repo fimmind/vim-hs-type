@@ -241,6 +241,14 @@ function! vim_hs_type#clear_highlight()
   endif
 endfunction
 
+function! s:rehighlight()
+  let l:cur_line = line(".")
+  if s:prev_line != l:cur_line
+    call s:highlight(s:types_ranges[line('.') - 1])
+    let s:prev_line = l:cur_line
+  endif
+endfunction
+
 function vim_hs_type#type()
   call vim_hs_type#clear_highlight()
 
@@ -301,8 +309,8 @@ function vim_hs_type#type()
   exe "normal! \<C-w>" . l:info_win_height . "_"
 
   normal! gg
-  autocmd BufLeave <buffer> call vim_hs_type#clear_highlight()
+  let s:prev_line = -1
 
-  " TODO: don't rehighlight if line('.') didn't changed
-  autocmd CursorMoved <buffer> call s:highlight(s:types_ranges[line('.') - 1])
+  autocmd BufLeave <buffer> call vim_hs_type#clear_highlight()
+  autocmd CursorMoved <buffer> call s:rehighlight()
 endfunction
