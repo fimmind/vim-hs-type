@@ -111,7 +111,7 @@ function! s:create_infowin(window_title)
   let s:info_window_id = win_getid()
 
   " Key bindings for the Info Window
-  nnoremap <silent> <buffer> <ESC> :call s:leave_infowin()<CR>
+  nnoremap <buffer> <Esc> :q<CR>
 
   " perform cleanup using an autocmd to ensure we don't get caught out by some
   " unexpected means of dismissing or leaving the Info Window (eg. <C-W q>,
