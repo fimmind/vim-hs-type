@@ -96,8 +96,8 @@ endfunction
 "
 let s:info_buffer = -1
 
-function! s:infowin_create(window_title)
-  call s:window_dimensions_save()
+function! s:create_infowin(window_title)
+  call s:save_window_dimensions()
   call s:set_global_settings()
 
   " The following settings are local so they don't have to be saved
@@ -122,14 +122,14 @@ function! s:infowin_create(window_title)
   let s:info_window_id = win_getid()
 
   " Key bindings for the Info Window
-  nnoremap <silent> <buffer> <ESC> :call vim_hs_type#infowin_leave()<CR>
+  nnoremap <silent> <buffer> <ESC> :call s:leave_infowin()<CR>
 
   " perform cleanup using an autocmd to ensure we don't get caught out by some
   " unexpected means of dismissing or leaving the Info Window (eg. <C-W q>,
   " <C-W k> etc)
   autocmd! * <buffer>
-  autocmd BufLeave <buffer> silent! call vim_hs_type#infowin_leave()
-  autocmd BufUnload <buffer> silent! call s:infowin_unload()
+  autocmd BufLeave <buffer> silent! call s:leave_infowin()
+  autocmd BufUnload <buffer> silent! call s:unload_infowin()
 endfunction
 
 " The following settings are global, so they must be saved before being
@@ -159,7 +159,7 @@ function! s:restore_global_settings()
 endfunction
 
 
-function! s:window_dimensions_save()
+function! s:save_window_dimensions()
   " Each element of the list s:window_dimensions is a list of 3 integers of
   " the form: [id, width, height]
   let s:window_dimensions = []
@@ -186,7 +186,7 @@ function! s:compare_windows(i1, i2)
   return 0
 endfunction
 
-function! s:window_dimensions_restore()
+function! s:restore_window_dimensions()
   " sort from tallest to shortest, tie-breaking on window width
   call sort(s:window_dimensions, "s:compare_windows")
 
@@ -203,18 +203,18 @@ function! s:window_dimensions_restore()
   endfor
 endfunction
 
-function! vim_hs_type#infowin_leave()
-  call s:infowin_close()
-  call s:infowin_unload()
+function! s:leave_infowin()
+  call s:close_infowin()
+  call s:unload_infowin()
   let s:info_buffer = -1
 endfunction
 
-function! s:infowin_unload()
-  call s:window_dimensions_restore()
+function! s:unload_infowin()
+  call s:restore_window_dimensions()
   call s:restore_global_settings()
 endfunction
 
-function! s:infowin_close()
+function! s:close_infowin()
   exe "silent! bunload!" s:info_buffer
 endfunction
 
@@ -299,7 +299,7 @@ function vim_hs_type#type()
 
   let s:sourse_win_id = win_getid()
 
-  call s:infowin_create("haskell-type[" . l:line . ":" . l:col . "]")
+  call s:create_infowin("haskell-type[" . l:line . ":" . l:col . "]")
   set syntax=haskell
   setlocal modifiable
   call append(0, l:types)
