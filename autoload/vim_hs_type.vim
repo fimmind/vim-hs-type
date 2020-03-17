@@ -136,13 +136,13 @@ let s:original_settings = {}
 function! s:set_global_settings()
   for key in keys(s:global_settings)
     exe "let s:original_settings[key] = &" . key
-    exe "let &" . key " = s:global_settings[key]"
+    exe "let &" . key "= s:global_settings[key]"
   endfor
 endfunction
 
 function! s:restore_global_settings()
   for key in keys(s:original_settings)
-    exe "let &" . key " = s:original_settings[key]"
+    exe "let &" . key "= s:original_settings[key]"
   endfor
   let original_settings = {}
 endfunction
@@ -309,7 +309,7 @@ function vim_hs_type#type()
   else
     let l:info_win_height = s:config['max_height']
   endif
-  exe "normal! \<C-w>" . l:info_win_height . "_"
+  exe "resize" l:info_win_height
 
   normal! gg
   let s:prev_line = -1
