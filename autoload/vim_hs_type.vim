@@ -245,7 +245,7 @@ endfunction
 function! s:rehighlight()
   let l:cur_line = line(".")
   if s:prev_line != l:cur_line
-    call s:highlight(s:types_ranges[line('.') - 1])
+    call s:highlight(s:exprs_ranges[line('.') - 1])
     let s:prev_line = l:cur_line
   endif
 endfunction
@@ -278,11 +278,11 @@ function vim_hs_type#type()
   endif
 
   let l:types = []
-  let s:types_ranges = []
+  let s:exprs_ranges = []
   for l:output_line in split(l:output, '\n')
     let l:m = matchlist(l:output_line, '\(\d\+\) \(\d\+\) \(\d\+\) \(\d\+\) "\([^"]\+\)"')
     if len(l:m) != 0
-      call add(s:types_ranges, l:m[1 : 4])
+      call add(s:exprs_ranges, l:m[1 : 4])
       call add(l:types, l:m[5])
     endif
   endfor
@@ -316,4 +316,30 @@ function vim_hs_type#type()
 
   autocmd BufLeave <buffer> call vim_hs_type#clear_highlight()
   autocmd CursorMoved <buffer> call s:rehighlight()
+
+  " Looks like Vim does not support cross-buffer text objects, therefore
+  " expression object works normally only in visual mode.
+  exe "vnoremap <buffer> a" . s:config['expression_obj']
+        \ ":call vim_hs_type#select_expression('a')<CR>"
+
+  exe "vnoremap <buffer> i" . s:config['expression_obj']
+        \ ":call vim_hs_type#select_expression('i')<CR>"
+endfunction
+
+function! vim_hs_type#select_expression(a_or_i)
+  let [l:line1, l:col1, l:line2, l:col2] = s:exprs_ranges[line(".") - 1]
+  quit
+
+  if a:a_or_i == 'a'
+    " TODO
+    finish
+  elseif a:a_or_i != 'i'
+    call s:print_error("Wrong argument for vim_hs_type#select_expression: '" . a:a_or_i . "'")
+    finish
+  endif
+
+  call setpos("'<", [0, l:line1, l:col1, 0])
+  call setpos("'>", [0, l:line2, l:col2 - 1, 0])
+
+  normal! gv
 endfunction
