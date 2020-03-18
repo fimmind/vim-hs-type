@@ -46,7 +46,7 @@ TODO
 
 Copyright (c) 2020 Vinogrodskiy Serafim
 
-For full information see LICENSE.
+For full information see `LICENSE.md`.
 
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
