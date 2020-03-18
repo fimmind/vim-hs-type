@@ -42,6 +42,11 @@ Also, text object of highlighted expression are available by `ie` and `ae` (latt
 ## Configuration
 TODO
 
+## LICENSE
+
+Copyright (c) 2020 Vinogrodskiy Serafim
+
+For full information see LICENSE.
 
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
