@@ -235,7 +235,7 @@ function! s:highlight(range)
   redraw!
 endfunction
 
-function! vim_hs_type#clear_highlight()
+function! s:clear_highlight()
   if exists("s:matchid")
     call matchdelete(s:matchid)
     unlet s:matchid
@@ -251,7 +251,7 @@ function! s:rehighlight()
 endfunction
 
 function vim_hs_type#type()
-  call vim_hs_type#clear_highlight()
+  call s:clear_highlight()
 
   if &l:modified
     call s:print_error('The buffer has been modified but not written')
@@ -314,19 +314,19 @@ function vim_hs_type#type()
   normal! gg
   let s:prev_line = -1
 
-  autocmd BufLeave <buffer> call vim_hs_type#clear_highlight()
+  autocmd BufLeave <buffer> call s:clear_highlight()
   autocmd CursorMoved <buffer> call s:rehighlight()
 
   " Looks like Vim does not support cross-buffer text objects, therefore
   " expression object works normally only in visual mode.
   exe "vnoremap <buffer> a" . s:config['expression_obj']
-        \ ":call vim_hs_type#select_expression('a')<CR>"
+        \ ":call <SID>select_expression('a')<CR>"
 
   exe "vnoremap <buffer> i" . s:config['expression_obj']
-        \ ":call vim_hs_type#select_expression('i')<CR>"
+        \ ":call <SID>select_expression('i')<CR>"
 endfunction
 
-function! vim_hs_type#select_expression(a_or_i)
+function! s:select_expression(a_or_i)
   let [l:line1, l:col1, l:line2, l:col2] = s:exprs_ranges[line(".") - 1]
   quit
 
