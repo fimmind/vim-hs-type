@@ -310,11 +310,13 @@ function vim_hs_type#type()
 
   " Looks like Vim does not support cross-buffer text objects, therefore
   " expression object works normally only in visual mode.
-  exe "vnoremap <buffer> a" . s:config['expression_obj']
-        \ ":call <SID>select_expression('a')<CR>"
+  if s:config['expression_obj'] != ""
+    exe "vnoremap <buffer> a" . s:config['expression_obj']
+          \ ":call <SID>select_expression('a')<CR>"
 
-  exe "vnoremap <buffer> i" . s:config['expression_obj']
-        \ ":call <SID>select_expression('i')<CR>"
+    exe "vnoremap <buffer> i" . s:config['expression_obj']
+          \ ":call <SID>select_expression('i')<CR>"
+  endif
 endfunction
 
 function! s:select_expression(a_or_i)
