@@ -42,8 +42,6 @@ Also, text object of highlighted expression are available by `ie` and `ae` (latt
 ## Configuration
 TODO
 
-## Acknowledges
-TODO
 
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
