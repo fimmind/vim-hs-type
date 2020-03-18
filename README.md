@@ -7,24 +7,21 @@ This plugin starts as a fork of [vim-hdevtools] and is now still in development.
 
 First of all you have to install [hdevtools], if you didn't this yet.
 
-You can do it via [stack] from Stackage (preferable):
-```sh
+You can do it via [stack] from Stackage:
+```shell
 $ stack install hdevtools
 ```
 
 or via [cabal] from Hackage:
-```sh
+```shell
 $ cabal install hdevtools
 ```
 
 Then you can use your favourite plugin manager to install `vim-hs-type` into Vim. I prefer [vim-plug], so in my case I add this to my `vimrc` (`init.vim` actually, cause I use [Neovim]):
-
 ```
 Plug 'fimmind/vim-hs-type'
 ```
-
-Then restart Vim and run `:PlugInstall` (in case of [vim-plug], of course).
-
+then restart Vim and run `:PlugInstall`.
 
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
