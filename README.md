@@ -1,7 +1,7 @@
 vim-hs-type
 ===========
 
-This plugin starts as a fork of [vim-hdevtools] and is now still in development. It aims to improve getting type information ignoring every other abilities of [hdevtools], cause they all are better done by [haskell-ide-engine].
+This plugin started as a fork of [vim-hdevtools] and is now still in development. It aims to improve getting type information ignoring every other abilities of [hdevtools], cause they all are better done by [haskell-ide-engine].
 
 ## Why is it better than [vim-hdevtools]?
 TODO
