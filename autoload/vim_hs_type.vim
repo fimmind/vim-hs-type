@@ -328,6 +328,7 @@ endfunction
 
 function! s:select_expression(a_or_i)
   let [l:line1, l:col1, l:line2, l:col2] = s:exprs_ranges[line(".") - 1]
+  let l:col2 = l:col2 - 1  " need this, cause hdevtools returns half-open interval
   quit
 
   if a:a_or_i == 'a'
