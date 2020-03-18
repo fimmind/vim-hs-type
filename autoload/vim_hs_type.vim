@@ -83,9 +83,9 @@ endfunction
 " Command-T:
 "     https://wincent.com/products/command-t/
 "
-let s:info_buffer = -1
-
 function! s:create_infowin(window_title)
+  let s:sourse_win_id = win_getid()
+
   call s:save_window_dimensions()
   call s:set_global_settings()
 
@@ -106,19 +106,14 @@ function! s:create_infowin(window_title)
   setlocal textwidth=0       " don't hard-wrap (break long lines)
   setlocal colorcolumn=0     " dot't highlight any column
 
-  " Save the buffer number of the Info Window for later
-  let s:info_buffer = bufnr("%")
+  " Save for later
+  let s:info_buffer_nr = bufnr("%")
   let s:info_window_id = win_getid()
 
-  " Key bindings for the Info Window
-  nnoremap <buffer> <Esc> :q<CR>
+  nnoremap <buffer> <Esc> :call <SID>leave_infowin()<CR>
 
-  " perform cleanup using an autocmd to ensure we don't get caught out by some
-  " unexpected means of dismissing or leaving the Info Window (eg. <C-W q>,
-  " <C-W k> etc)
   autocmd! * <buffer>
-  autocmd BufLeave <buffer> silent! call s:leave_infowin()
-  autocmd BufUnload <buffer> silent! call s:unload_infowin()
+  autocmd BufLeave <buffer> call s:leave_infowin()
 endfunction
 
 " The following settings are global, so they must be saved before being
@@ -152,8 +147,11 @@ function! s:save_window_dimensions()
   " Each element of the list s:window_dimensions is a list of 3 integers of
   " the form: [id, width, height]
   let s:window_dimensions = []
-  for l:i in range(1, winnr("$"))
-    call add(s:window_dimensions, [l:i, winwidth(i), winheight(i)])
+  for wininfo in getwininfo()
+    if !get(wininfo['variables'], 'float', 0)
+      call add(s:window_dimensions,
+            \ [wininfo['winid'], wininfo['width'], wininfo['height']])
+    endif
   endfor
 endfunction
 
@@ -176,41 +174,38 @@ function! s:compare_windows(i1, i2)
 endfunction
 
 function! s:restore_window_dimensions()
+  let l:original_win_id = win_getid()
+
   " sort from tallest to shortest, tie-breaking on window width
   call sort(s:window_dimensions, "s:compare_windows")
 
   " starting with the tallest ensures that there are no constraints preventing
   " windows on the side of vertical splits from regaining their original full
   " size
-  for l:i in s:window_dimensions
-    let l:id = l:i[0]
-    let l:width = l:i[1]
-    let l:height = l:i[2]
-    exe l:id . "wincmd w"
+  for i in s:window_dimensions
+    let l:id = i[0]
+    let l:width = i[1]
+    let l:height = i[2]
+    call win_gotoid(l:id)
     exe "resize" l:height
     exe "vertical resize" l:width
   endfor
+
+  call win_gotoid(l:original_win_id)
 endfunction
 
 function! s:leave_infowin()
-  call s:close_infowin()
-  call s:unload_infowin()
-  let s:info_buffer = -1
-endfunction
-
-function! s:unload_infowin()
-  call s:restore_window_dimensions()
+  exe "silent! bunload!" s:info_buffer_nr
+  call s:clear_highlight()
   call s:restore_global_settings()
-endfunction
-
-function! s:close_infowin()
-  exe "silent! bunload!" s:info_buffer
+  call s:restore_window_dimensions()
+  unlet! s:info_buffer_nr
+  unlet! s:info_window_id
+  unlet! s:sourse_win_id
 endfunction
 
 " Code taken from Command-T ends here
 " ----------------------------------------------------------------------------
-
-let s:source_win_id = -1
 
 function! s:highlight(range)
   call win_gotoid(s:sourse_win_id)
@@ -236,6 +231,7 @@ function! s:highlight(range)
 endfunction
 
 function! s:clear_highlight()
+  call win_gotoid(s:sourse_win_id)
   if exists("s:matchid")
     call matchdelete(s:matchid)
     unlet s:matchid
@@ -251,8 +247,6 @@ function! s:rehighlight()
 endfunction
 
 function vim_hs_type#type()
-  call s:clear_highlight()
-
   if &l:modified
     call s:print_error('The buffer has been modified but not written')
     return
@@ -295,8 +289,6 @@ function vim_hs_type#type()
 
   call s:print_message("Done")
 
-  let s:sourse_win_id = win_getid()
-
   call s:create_infowin("haskell-type[" . l:line . ":" . l:col . "]")
   set syntax=haskell
   setlocal modifiable
@@ -314,7 +306,6 @@ function vim_hs_type#type()
   normal! gg
   let s:prev_line = -1
 
-  autocmd BufLeave <buffer> call s:clear_highlight()
   autocmd CursorMoved <buffer> call s:rehighlight()
 
   " Looks like Vim does not support cross-buffer text objects, therefore
