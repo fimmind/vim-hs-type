@@ -23,6 +23,19 @@ Plug 'fimmind/vim-hs-type'
 ```
 then restart Vim and run `:PlugInstall`.
 
+## Usage
+
+This plugin exports only one function `vim_hs_type#type()`, which does all the work. When it's run, a window, containing all types of expressions under cursor, is opened (You can leave it with `<Esc>` or `:q<CR>`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
+
+![](./pictures/function_run.png)
+
+And a greatest feature of this plugin. Moving cursor over lines causes highlighting of relevant expressions in source code:
+
+![](./pictures/moving_around1.png)
+![](./pictures/moving_around2.png)
+
+Also, text object of highlighted expressions are available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
+
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
 [neovim]:             https://neovim.io/
