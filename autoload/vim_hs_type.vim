@@ -84,7 +84,7 @@ endfunction
 "     https://wincent.com/products/command-t/
 "
 function! s:create_infowin(window_title)
-  let s:sourse_win_id = win_getid()
+  let s:source_win_id = win_getid()
 
   call s:save_window_dimensions()
   call s:set_global_settings()
@@ -201,14 +201,14 @@ function! s:leave_infowin()
   call s:restore_window_dimensions()
   unlet! s:info_buffer_nr
   unlet! s:info_window_id
-  unlet! s:sourse_win_id
+  unlet! s:source_win_id
 endfunction
 
 " Code taken from Command-T ends here
 " ----------------------------------------------------------------------------
 
 function! s:highlight(range)
-  call win_gotoid(s:sourse_win_id)
+  call win_gotoid(s:source_win_id)
   if exists("s:matchid")
     let l:prev_matchid = s:matchid
   endif
@@ -222,7 +222,7 @@ function! s:highlight(range)
         \          . l:col2  . 'c'
         \   , 10
         \   , -1
-        \   , {'window': s:sourse_win_id})
+        \   , {'window': s:source_win_id})
   if exists("l:prev_matchid")
     call matchdelete(l:prev_matchid)
   endif
@@ -231,7 +231,7 @@ function! s:highlight(range)
 endfunction
 
 function! s:clear_highlight()
-  call win_gotoid(s:sourse_win_id)
+  call win_gotoid(s:source_win_id)
   if exists("s:matchid")
     call matchdelete(s:matchid)
     unlet s:matchid
