@@ -1,14 +1,14 @@
 vim-hs-type
 ===========
 
-This plugin starts as a fork of [vim-hdevtools] and is now still in development. It aims to improve getting type information ignoring every other abilities of hdevtools, cause they all are better done by [haskell-ide-engine].
+This plugin starts as a fork of [vim-hdevtools] and is now still in development. It aims to improve getting type information ignoring every other abilities of [hdevtools], cause they all are better done by [haskell-ide-engine].
 
 ## Why is it better than [vim-hdevtools]?
 TODO
 
 ## Installation
 
-First of all you have to install [hdevtools], if you didn't this yet.
+First of all you have to install [hdevtools], if you didn't do this yet.
 
 You can do it via [stack] from Stackage:
 ```shell
@@ -28,16 +28,16 @@ then restart Vim and run `:PlugInstall`.
 
 ## Usage
 
-This plugin exports only one function `vim_hs_type#type()`, which does all the work. When it's run, a window, containing all types of expressions under cursor, is opened (You can leave it with `<Esc>` or `:q<CR>`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
+This plugin exports only one function -- `vim_hs_type#type()`, which does all the work. When you run it, a window, containing all types of expressions under cursor, is opened (You can leave it with `<Esc>` or `:q`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
 
 ![](./pictures/function_run.png)
 
-And a greatest feature of this plugin. Moving cursor over lines causes highlighting of relevant expressions in source code:
+And a greatest feature of this plugin. Moving cursor over lines causes highlighting of relevant expression in source code:
 
 ![](./pictures/moving_around1.png)
 ![](./pictures/moving_around2.png)
 
-Also, text object of highlighted expressions are available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
+Also, text object of highlighted expression are available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
 
 ## Configuration
 TODO
