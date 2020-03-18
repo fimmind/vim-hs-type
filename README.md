@@ -3,6 +3,9 @@ vim-hs-type
 
 This plugin starts as a fork of [vim-hdevtools] and is now still in development. It aims to improve getting type information ignoring every other abilities of hdevtools, cause they all are better done by [haskell-ide-engine].
 
+## Why is it better than [vim-hdevtools]?
+TODO
+
 ## Installation
 
 First of all you have to install [hdevtools], if you didn't this yet.
@@ -35,6 +38,12 @@ And a greatest feature of this plugin. Moving cursor over lines causes highlight
 ![](./pictures/moving_around2.png)
 
 Also, text object of highlighted expressions are available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
+
+## Configuration
+TODO
+
+## Acknowledges
+TODO
 
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
