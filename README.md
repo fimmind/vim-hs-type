@@ -37,7 +37,7 @@ And a greatest feature of this plugin. Moving cursor over lines causes highlight
 ![](./pictures/moving_around1.png)
 ![](./pictures/moving_around2.png)
 
-Also, text object of highlighted expression are available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
+Also, text object of highlighted expression is available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
 
 ## Configuration
 TODO
