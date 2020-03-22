@@ -17,7 +17,7 @@ function! s:print_message(msg)
   echomsg "vim-hs-type: " . a:msg
 endfunction
 
-" Read config
+" Read configuration
 " ================================================
 let s:config = {
       \ 'max_height': 12,
@@ -34,10 +34,10 @@ for key in keys(s:config)
   endif
 endfor
 
-let s:hdevtools_exe = s:config['path_to_hdevtools']
-
 " Prepare hdevtools
 " ================================================
+let s:hdevtools_exe = s:config['path_to_hdevtools']
+
 if !executable(s:hdevtools_exe)
   call s:print_error(s:hdevtools_exe . ' is not executable!')
   finish
@@ -48,8 +48,9 @@ let s:hdevtools_args =
 
 let s:started_servers_dirs = []
 
+" Gets current shell dir omitting new-line character at the end
 function! s:pwd()
-  return get(split(system("pwd")), 0, '')
+  return get(split(system("pwd"), '\n'), 0, '')
 endfunction
 
 function! s:run_hdevtools(command, args)
@@ -76,9 +77,84 @@ function! s:shutdown_servers()
   call system("cd " . shellescape(l:work_dir))
 endfunction
 
-" ----------------------------------------------------------------------------
-" The window code below was adapted from the 'Command-T' plugin, with major
-" changes (and translated from the original Ruby)
+" Main function
+" ================================================
+function vim_hs_type#type()
+  if &l:modified
+    call s:print_error('The buffer has been modified but not written')
+    return
+  endif
+
+  call s:print_message("Getting types, wait...")
+
+  let l:line = line('.')
+  let l:col = col('.')
+
+  let l:file = expand('%')
+  if l:file ==# ''
+    call s:print_warning("Current version of plugin doesn't support running on an unnamed buffer.")
+    return
+  endif
+  let l:output = s:run_hdevtools('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
+
+  if v:shell_error != 0
+    for l:error_line in split(l:output, '\n')
+      call s:print_error(l:error_line)
+    endfor
+    return
+  endif
+
+  let l:types = []
+  let s:exprs_ranges = []
+  for l:output_line in split(l:output, '\n')
+    let l:m = matchlist(l:output_line, '\(\d\+\) \(\d\+\) \(\d\+\) \(\d\+\) "\([^"]\+\)"')
+    if len(l:m) != 0
+      call add(s:exprs_ranges, l:m[1 : 4])
+      call add(l:types, l:m[5])
+    endif
+  endfor
+
+  let l:len = len(l:types)
+  if l:len == 0
+    call s:print_message("Expression under cursor has not type, aborting...")
+    return
+  endif
+
+  call s:print_message("Done")
+
+  call s:create_infowin("haskell-type[" . l:line . ":" . l:col . "]")
+  set syntax=haskell
+  setlocal modifiable
+  call append(0, l:types)
+  normal! Gdd
+  setlocal nomodifiable
+
+  if s:config['dynamic_height'] && l:len <= s:config['max_height']
+    let l:info_win_height = l:len
+  else
+    let l:info_win_height = s:config['max_height']
+  endif
+  exe "resize" l:info_win_height
+
+  normal! gg
+  let s:prev_line = -1
+
+  autocmd CursorMoved <buffer> call s:rehighlight()
+
+  " Looks like Vim does not support cross-buffer text objects, therefore
+  " expression object works normally only in visual mode.
+  if s:config['expression_obj'] != ""
+    exe "vnoremap <buffer> a" . s:config['expression_obj']
+          \ ":call <SID>select_expression('a')<CR>"
+
+    exe "vnoremap <buffer> i" . s:config['expression_obj']
+          \ ":call <SID>select_expression('i')<CR>"
+  endif
+endfunction
+
+" Info-window
+" ================================================
+" The window code below was originally adapted from the 'Command-T' plugin.
 "
 " Command-T:
 "     https://wincent.com/products/command-t/
@@ -174,14 +250,14 @@ function! s:compare_windows(i1, i2)
 endfunction
 
 function! s:restore_window_dimensions()
-  let l:original_win_id = win_getid()
-
-  " sort from tallest to shortest, tie-breaking on window width
-  call sort(s:window_dimensions, "s:compare_windows")
-
-  " starting with the tallest ensures that there are no constraints preventing
+  " Sort from tallest to shortest, tie-breaking on window width.
+  " Starting with the tallest ensures that there are no constraints preventing
   " windows on the side of vertical splits from regaining their original full
   " size
+  call sort(s:window_dimensions, "s:compare_windows")
+
+  let l:original_win_id = win_getid()
+
   for i in s:window_dimensions
     let l:id = i[0]
     let l:width = i[1]
@@ -204,9 +280,8 @@ function! s:leave_infowin()
   unlet! s:source_win_id
 endfunction
 
-" Code taken from Command-T ends here
-" ----------------------------------------------------------------------------
-
+" Highlighting
+" ================================================
 function! s:highlight(range)
   call win_gotoid(s:source_win_id)
   if exists("s:matchid")
@@ -246,79 +321,8 @@ function! s:rehighlight()
   endif
 endfunction
 
-function vim_hs_type#type()
-  if &l:modified
-    call s:print_error('The buffer has been modified but not written')
-    return
-  endif
-
-  call s:print_message("Getting types, wait...")
-
-  let l:line = line('.')
-  let l:col = col('.')
-
-  let l:file = expand('%')
-  if l:file ==# ''
-    call s:print_warning("Current version of plugin doesn't support running on an unnamed buffer.")
-    return
-  endif
-  let l:output = s:run_hdevtools('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
-
-  if v:shell_error != 0
-    for l:error_line in split(l:output, '\n')
-      call s:print_error(l:error_line)
-    endfor
-    return
-  endif
-
-  let l:types = []
-  let s:exprs_ranges = []
-  for l:output_line in split(l:output, '\n')
-    let l:m = matchlist(l:output_line, '\(\d\+\) \(\d\+\) \(\d\+\) \(\d\+\) "\([^"]\+\)"')
-    if len(l:m) != 0
-      call add(s:exprs_ranges, l:m[1 : 4])
-      call add(l:types, l:m[5])
-    endif
-  endfor
-
-  let l:len = len(l:types)
-  if l:len == 0
-    call s:print_message("Expression under cursor has not type, aborting...")
-    return
-  endif
-
-  call s:print_message("Done")
-
-  call s:create_infowin("haskell-type[" . l:line . ":" . l:col . "]")
-  set syntax=haskell
-  setlocal modifiable
-  call append(0, l:types)
-  normal! Gdd
-  setlocal nomodifiable
-
-  if s:config['dynamic_height'] && l:len <= s:config['max_height']
-    let l:info_win_height = l:len
-  else
-    let l:info_win_height = s:config['max_height']
-  endif
-  exe "resize" l:info_win_height
-
-  normal! gg
-  let s:prev_line = -1
-
-  autocmd CursorMoved <buffer> call s:rehighlight()
-
-  " Looks like Vim does not support cross-buffer text objects, therefore
-  " expression object works normally only in visual mode.
-  if s:config['expression_obj'] != ""
-    exe "vnoremap <buffer> a" . s:config['expression_obj']
-          \ ":call <SID>select_expression('a')<CR>"
-
-    exe "vnoremap <buffer> i" . s:config['expression_obj']
-          \ ":call <SID>select_expression('i')<CR>"
-  endif
-endfunction
-
+" Expression object
+" ================================================
 function! s:select_expression(a_or_i)
   let [l:line1, l:col1, l:line2, l:col2] = s:exprs_ranges[line(".") - 1]
   let l:col2 = l:col2 - 1  " need this, cause hdevtools returns half-open interval
