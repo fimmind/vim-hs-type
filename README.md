@@ -20,24 +20,23 @@ or via [cabal] from Hackage:
 $ cabal install hdevtools
 ```
 
-Then you can use your favourite plugin manager to install `vim-hs-type` into Vim. I prefer [vim-plug], so in my case I add this to my `vimrc` (`init.vim` actually, cause I use [Neovim]):
+Then you can use your favourite plugin manager to install `vim-hs-type` into Vim. For [vim-plug]:
 ```
 Plug 'fimmind/vim-hs-type'
 ```
-then restart Vim and run `:PlugInstall`.
 
 ## Usage
 
-This plugin exports function `vim_hs_type#type()`, which does all the work. When you run it, a window, containing all types of expressions under cursor, is opened (You can leave it with `<Esc>` or `gq`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
+Main function of this plugin is `vim_hs_type#type()`. When you run it, a window containing all types of expressions under cursor is opened (You can close it with `<Esc>` or `gq`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
 
 ![](./pictures/function_run.png)
 
-And a greatest feature of this plugin. Moving cursor over lines causes highlighting of relevant expression in source code:
+Moving cursor over lines causes highlighting of relevant expression in source code:
 
 ![](./pictures/moving_around1.png)
 ![](./pictures/moving_around2.png)
 
-Also, text object of highlighted expression is available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression, but `vaed` works fine.
+Also, text object of highlighted expression is available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression (while `vaed` works fine).
 
 ## Configuration
 TODO
