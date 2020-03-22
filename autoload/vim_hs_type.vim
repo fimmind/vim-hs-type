@@ -90,11 +90,8 @@ function s:prepare_shutdown()
 
     if !l:already_added
       call add(s:started_servers_dirs, l:pwd)
-      echo "added" l:pwd
     endif
   endif
-
-  echo s:started_servers_dirs
 endfunction
 
 " Main function
