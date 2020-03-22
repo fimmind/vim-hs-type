@@ -43,7 +43,26 @@ Moving cursor over lines causes highlighting of relevant expression in source co
 Also, text object of highlighted expression is available by `ie` and `ae` (latter also selects space around expression similarly to `aw`), but sadly they work only in visual mode, so you can't, for example, use `dae` to delete an expression (while `vaed` works fine).
 
 ## Configuration
-TODO
+This plugin is configured via `g:vim_hs_type_conf` dictionary with such keys:
+
+| key                   | description                                       | default        |
+|-----------------------|---------------------------------------------------|----------------|
+| `'max_height'`        | Maximal height of opened window                   | `12`           |
+| `'dynamic_height'`    | Enable/Disable dinamic height                     | `1`            |
+| `'path_to_hdevtools'` | Path to `hdevtools` executable                    | `'hdevtools'`  |
+| `'hdevtools_args'`    | Arguments passed to `hdevtools`                   | `[]`           |
+| `'expression_obj'`    | Letter or string for expression object            | `'e'`          |
+| `'highlight_group'`   | Highlighting group for expressions in source code | `'MatchParen'` |
+
+So, if you, for example, want to disable dynamic height and stack integration and highlight expressions in source code with `Visual` group, add following to your `vimrc`:
+
+```vim
+let g:vim_hs_type_conf = {
+      \ 'dynamic_height': 0,
+      \ 'hdevtools_args': ['--nostack'],
+      \ 'highlight_group': 'Visual'
+      \ }
+```
 
 ## LICENSE
 
