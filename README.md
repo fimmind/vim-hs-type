@@ -1,6 +1,6 @@
 vim-hs-type
 ===========
-This plugin has started as a fork of [vim-hdevtools]. It aims to improve getting type information ignoring every other abilities of [hdevtools], cause they all are better done by [haskell-ide-engine].
+This plugin has started as a fork of [vim-hdevtools]. It aims to improve getting type information ignoring every other abilities of [hdevtools], cause they are better done by [haskell-ide-engine].
 
 ## Why is it better than [vim-hdevtools]?
 1. **Interacting with types.** Opened window contains types as a plain text, so you can interact with them as with a plain text.
@@ -22,7 +22,7 @@ or via [cabal] from Hackage:
 $ cabal install hdevtools
 ```
 
-Then you can use your favourite plugin manager to install `vim-hs-type` into Vim. For [vim-plug]:
+Then use your favourite plugin manager to install `vim-hs-type` into Vim. For [vim-plug]:
 ```vim
 Plug 'fimmind/vim-hs-type'
 ```
