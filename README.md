@@ -4,7 +4,11 @@ vim-hs-type
 This plugin started as a fork of [vim-hdevtools] and is now still in development. It aims to improve getting type information ignoring every other abilities of [hdevtools], cause they all are better done by [haskell-ide-engine].
 
 ## Why is it better than [vim-hdevtools]?
-TODO
+1. **Interacting with types.** Opened window contains types as a plain text, so you can interact with it as with a plain text.
+2. **Multiple projects support.** While [vim-hdevtools] stops only first started [hdevtools] server and only in directory where you opened Vim, `vim-hs-type` stops them all, even if they are in different projects and directories.
+3. **Interacting with expressions.** `vim-hs-type` supports `ie` and `ae` text objects (see [Usage](##Usage)).
+4. **More clean and readable code.**
+5. **More customisation abilities**. See [Configuration](##Configuration).
 
 ## Installation
 
