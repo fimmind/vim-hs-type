@@ -205,19 +205,19 @@ let s:global_settings = {
       \ "equalalways": 0
       \ }
 
-let s:original_settings = {}
+let s:original_global_settings = {}
 function! s:set_global_settings()
   for key in keys(s:global_settings)
-    exe "let s:original_settings[key] = &" . key
+    exe "let s:original_global_settings[key] = &" . key
     exe "let &" . key "= s:global_settings[key]"
   endfor
 endfunction
 
 function! s:restore_global_settings()
-  for key in keys(s:original_settings)
-    exe "let &" . key "= s:original_settings[key]"
+  for key in keys(s:original_global_settings)
+    exe "let &" . key "= s:original_global_settings[key]"
   endfor
-  let original_settings = {}
+  let original_global_settings = {}
 endfunction
 
 " Saving window dimensions
