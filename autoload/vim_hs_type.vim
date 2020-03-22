@@ -54,12 +54,7 @@ function! s:pwd()
 endfunction
 
 function! s:run_hdevtools(command, args)
-  call system("hdevtools --status")
-  if v:shell_error != 0
-    " Server is not running, therfore it will by started by the next command,
-    " so we need to shutdown it on exit
-    call add(s:started_servers_dirs, s:pwd())
-  endif
+  call s:prepare_shutdown()
 
   let l:cmd = s:hdevtools_exe
         \ . ' ' . a:command
@@ -75,6 +70,31 @@ function! s:shutdown_servers()
     call system("cd " . shellescape(dir) . " && hdevtools --stop-server")
   endfor
   call system("cd " . shellescape(l:work_dir))
+endfunction
+
+function s:prepare_shutdown()
+  let l:pwd = s:pwd()
+  call system("hdevtools --status")
+
+  " If error appears, this means that server is not running, therfore it will
+  " by started by the next command, so we need to shutdown it on exit
+  if v:shell_error != 0
+    let l:already_added = 0
+
+    for dir in s:started_servers_dirs
+      if dir == l:pwd
+        let l:already_added = 1
+        break
+      endif
+    endfor
+
+    if !l:already_added
+      call add(s:started_servers_dirs, l:pwd)
+      echo "added" l:pwd
+    endif
+  endif
+
+  echo s:started_servers_dirs
 endfunction
 
 " Main function
