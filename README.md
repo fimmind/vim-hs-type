@@ -28,7 +28,7 @@ then restart Vim and run `:PlugInstall`.
 
 ## Usage
 
-This plugin exports function `vim_hs_type#type()`, which does all the work. When you run it, a window, containing all types of expressions under cursor, is opened (You can leave it with `<Esc>` or `:q`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
+This plugin exports function `vim_hs_type#type()`, which does all the work. When you run it, a window, containing all types of expressions under cursor, is opened (You can leave it with `<Esc>` or `gq`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
 
 ![](./pictures/function_run.png)
 

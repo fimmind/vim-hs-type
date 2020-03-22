@@ -188,6 +188,7 @@ function! s:create_infowin(window_title)
   let s:info_window_id = win_getid()
 
   nnoremap <buffer> <Esc> :quit<CR>
+  nnoremap <buffer> gq :quit<CR>
 
   autocmd! * <buffer>
   autocmd BufLeave <buffer> call s:leave_infowin()
