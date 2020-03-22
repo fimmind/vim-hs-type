@@ -330,26 +330,26 @@ function! s:select_expression(a_or_i)
   quit
 
   if a:a_or_i == 'a'
-    let l:moved_col1 = l:col1
-    while l:moved_col1 > 1 && getline(l:line1)[l:moved_col1 - 2] =~ '\s'
-      let l:moved_col1 = l:moved_col1 - 1
-    endwhile
-
-    " Do not break indentation
-    if l:moved_col1 > 1
-      let l:col1 = l:moved_col1
-    endif
-
     let l:max_col2 = len(getline(l:line2)) - 1
     while l:col2 < l:max_col2 && getline(l:line2)[l:col2] =~ '\s'
       let l:col2 = l:col2 + 1
     endwhile
 
-    " Leave one space
-    if getline(l:line2)[l:col2 - 1] =~ '\s'
-      let l:col2 = l:col2 - 1
-    elseif getline(l:line1)[l:col1 - 1] =~ '\s'
-      let l:col1 = l:col1 + 1
+    let l:moved_col1 = l:col1
+    while l:moved_col1 > 1 && getline(l:line1)[l:moved_col1 - 2] =~ '\s'
+      let l:moved_col1 = l:moved_col1 - 1
+    endwhile
+
+    " Do not break indentation if expression is first in line
+    if l:moved_col1 > 1
+      let l:col1 = l:moved_col1
+
+      " Do not select one space around expression if possible
+      if getline(l:line2)[l:col2 - 1] =~ '\s'
+        let l:col2 = l:col2 - 1
+      elseif getline(l:line1)[l:col1 - 1] =~ '\s'
+        let l:col1 = l:col1 + 1
+      endif
     endif
   elseif a:a_or_i != 'i'
     call s:print_error("Wrong argument for vim_hs_type#select_expression: '" . a:a_or_i . "'")
