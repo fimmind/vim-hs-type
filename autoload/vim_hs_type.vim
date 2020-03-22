@@ -154,6 +154,7 @@ endfunction
 
 " Info-window
 " ================================================
+"
 " The window code below was originally adapted from the 'Command-T' plugin.
 "
 " Command-T:
@@ -218,34 +219,37 @@ function! s:restore_global_settings()
   let original_settings = {}
 endfunction
 
-
+" Saving window dimensions
+" ================================================
 function! s:save_window_dimensions()
   " Each element of the list s:window_dimensions is a list of 3 integers of
   " the form: [id, width, height]
   let s:window_dimensions = []
   for wininfo in getwininfo()
     if !get(wininfo['variables'], 'float', 0)
-      call add(s:window_dimensions,
-            \ [wininfo['winid'], wininfo['width'], wininfo['height']])
+      let l:window_dimension = {}
+      for key in ['winid', 'height', 'width']
+        let l:window_dimension[key] = wininfo[key]
+      endfor
+      call add(s:window_dimensions, l:window_dimension)
     endif
   endfor
 endfunction
 
 " Used in s:window_dimensions_restore for sorting the windows
 function! s:compare_windows(i1, i2)
-  " Compare the window heights:
-  if a:i1[2] < a:i2[2]
+  if a:i1['height'] < a:i2['height']
     return 1
-  elseif a:i1[2] > a:i2[2]
+  elseif a:i1['height'] > a:i2['height']
     return -1
   endif
-  " The heights were equal, so compare the widths:
-  if a:i1[1] < a:i2[1]
+
+  if a:i1['width'] < a:i2['width']
     return 1
-  elseif a:i1[1] > a:i2[1]
+  elseif a:i1['width'] > a:i2['width']
     return -1
   endif
-  " The widths were also equal:
+
   return 0
 endfunction
 
@@ -258,13 +262,10 @@ function! s:restore_window_dimensions()
 
   let l:original_win_id = win_getid()
 
-  for i in s:window_dimensions
-    let l:id = i[0]
-    let l:width = i[1]
-    let l:height = i[2]
-    call win_gotoid(l:id)
-    exe "resize" l:height
-    exe "vertical resize" l:width
+  for wininfo in s:window_dimensions
+    call win_gotoid(wininfo['winid'])
+    exe "resize" wininfo['height']
+    exe "vertical resize" wininfo['width']
   endfor
 
   call win_gotoid(l:original_win_id)
