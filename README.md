@@ -61,9 +61,7 @@ let g:vim_hs_type_conf = {
 ```
 
 ## LICENSE
-Copyright (c) 2020 Vinogrodskiy Serafim
-
-For full information see `LICENSE.md`.
+* MIT
 
 [vim-hdevtools]:      https://github.com/bitc/vim-hdevtools
 [vim-plug]:           https://github.com/junegunn/vim-plug
