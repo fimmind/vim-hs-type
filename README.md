@@ -42,14 +42,15 @@ Also, text object of highlighted expression is available by `ie` and `ae` (latte
 ## Configuration
 This plugin is configured via `g:vim_hs_type_conf` dictionary with such keys:
 
-| key                   | description                                       | default        |
-|-----------------------|---------------------------------------------------|----------------|
-| `'max_height'`        | Maximal height of opened window                   | `12`           |
-| `'dynamic_height'`    | Enable/Disable dinamic height                     | `1`            |
-| `'path_to_hdevtools'` | Path to `hdevtools` executable                    | `'hdevtools'`  |
-| `'hdevtools_args'`    | Arguments passed to `hdevtools`                   | `[]`           |
-| `'expression_obj'`    | Letter or string for expression object            | `'e'`          |
-| `'highlight_group'`   | Highlighting group for expressions in source code | `'MatchParen'` |
+| key                      | description                                                 | default        |
+|--------------------------|-------------------------------------------------------------|----------------|
+| `'max_height'`           | Maximal height of opened window                             | `12`           |
+| `'dynamic_height'`       | Enable/Disable dinamic height                               | `1`            |
+| `'path_to_hdevtools'`    | Path to `hdevtools` executable                              | `'hdevtools'`  |
+| `'hdevtools_args'`       | Arguments passed to `hdevtools`                             | `[]`           |
+| `'expression_obj'`       | Letter or string for expression object                      | `'e'`          |
+| `'highlight_group'`      | Highlighting group for expressions in source code           | `'MatchParen'` |
+| `'hdevtools_from_stack'` | If enabled, hdevtools runs from a stack's hdevtools package | `0`            |
 
 So, if you, for example, want to disable dynamic height and stack integration and highlight expressions in source code with `Visual` group, add following to your `vimrc`:
 ```vim

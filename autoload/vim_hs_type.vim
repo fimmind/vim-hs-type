@@ -67,14 +67,14 @@ autocmd VimLeave * call s:shutdown_servers()
 function! s:shutdown_servers()
   let l:work_dir = s:pwd()
   for dir in s:started_servers_dirs
-    call system("cd " . shellescape(dir) . " && hdevtools --stop-server")
+    call system("cd " . shellescape(dir) . " && " . s:hdevtools_exe . " --stop-server")
   endfor
   call system("cd " . shellescape(l:work_dir))
 endfunction
 
 function s:prepare_shutdown()
   let l:pwd = s:pwd()
-  call system("hdevtools --status")
+  call system(s:hdevtools_exe . " --status")
 
   " If error appears, this means that server is not running, therfore it will
   " by started by the next command, so we need to shutdown it on exit
