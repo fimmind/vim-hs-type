@@ -10,7 +10,12 @@ This plugin has started as a fork of [vim-hdevtools]. It aims to improve getting
 5. **More customisation abilities.** See [Configuration](#Configuration).
 
 ## Installation
-First of all you have to install [hdevtools], if you didn't do this yet.
+There are to ways this plugin can access [hdevtools]. You can set `'hdevtools_from_stack'` option to `0` (See [Configuration](#Configuration)) and then this command will be used by this plugin to run [hdevtools]:
+```
+stack exec --package hdevtools --no-ghc-package-path hdevtools
+```
+
+Otherwise you have to install [hdevtools].
 
 You can do it via [stack] from Stackage:
 ```shell
