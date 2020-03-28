@@ -10,7 +10,7 @@ This plugin has started as a fork of [vim-hdevtools]. It aims to improve getting
 5. **More customisation abilities.** See [Configuration](#Configuration).
 
 ## Installation
-There are to ways this plugin can access [hdevtools]. You can set `'hdevtools_from_stack'` option to `0` (See [Configuration](#Configuration)) and then this command will be used by this plugin to run [hdevtools]:
+There are to ways this plugin can access [hdevtools]. You can set `'hdevtools_from_stack'` option to `1` (See [Configuration](#Configuration)) and then this command will be used by this plugin to run [hdevtools]:
 ```
 stack exec --package hdevtools --no-ghc-package-path hdevtools
 ```
