@@ -25,7 +25,8 @@ let s:config = {
       \ 'path_to_hdevtools': 'hdevtools',
       \ 'hdevtools_args': [],
       \ 'expression_obj': 'e',
-      \ 'highlight_group': 'MatchParen'
+      \ 'highlight_group': 'MatchParen',
+      \ 'hdevtools_from_stack': 0
       \ }
 
 for key in keys(s:config)
@@ -36,11 +37,18 @@ endfor
 
 " Prepare hdevtools
 " ================================================
-let s:hdevtools_exe = s:config['path_to_hdevtools']
-
-if !executable(s:hdevtools_exe)
-  call s:print_error(s:hdevtools_exe . ' is not executable!')
-  finish
+if s:config['hdevtools_from_stack']
+  if !executable('stack')
+    call s:print_error('stack is not executable')
+    finish
+  endif
+  let s:hdevtools_exe = 'stack exec --package hdevtools --no-ghc-package-path hdevtools --'
+else
+  let s:hdevtools_exe = s:config['path_to_hdevtools']
+  if !executable(s:hdevtools_exe)
+    call s:print_error(s:hdevtools_exe . ' is not executable!')
+    finish
+  endif
 endif
 
 let s:hdevtools_args =
