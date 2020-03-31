@@ -15,7 +15,7 @@ There are to ways this plugin can access [hdevtools]. You can set `'hdevtools_fr
 stack exec --package hdevtools --no-ghc-package-path hdevtools
 ```
 
-Otherwise you have to install [hdevtools].
+Otherwise you have to install [hdevtools] globally.
 
 You can do it via [stack] from Stackage:
 ```shell
@@ -31,6 +31,21 @@ Then use your favourite plugin manager to install `vim-hs-type` into Vim. For [v
 ```vim
 Plug 'fimmind/vim-hs-type'
 ```
+
+This plugin does not provide any default keybinding. I recommend to configure them for quick access to `vim_hs_type#type()`. Like that:
+```vim
+" .vimrc
+autocmd FileType haskell nnoremap <buffer> <localleader>ht
+      \ :call vim_hs_type#type()<CR>
+```
+or that:
+```vim
+" ftplugin/haskell.vim
+nnoremap <buffer> <localleader>ht
+      \ :call vim_hs_type#type()<CR>
+```
+
+You can replace `<localleader>ht` with any keybinding you like.
 
 ## Usage
 Main function of this plugin is `vim_hs_type#type()`. When you run it, a window containing all types of expressions under cursor is opened (You can close it with `<Esc>` or `gq`). Most likely in your case this won't look exactly the same, cause I have many other plugins installed, but for my setup it looks this way:
