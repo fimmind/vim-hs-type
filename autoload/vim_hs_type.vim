@@ -56,11 +56,6 @@ let s:hdevtools_args =
 
 let s:started_servers_dirs = []
 
-" Gets current shell dir omitting new-line character at the end
-function! s:pwd()
-  return get(split(system("pwd"), '\n'), 0, '')
-endfunction
-
 function! s:run_hdevtools(command, args)
   call s:prepare_shutdown()
 
@@ -73,7 +68,7 @@ endfunction
 
 autocmd VimLeave * call s:shutdown_servers()
 function! s:shutdown_servers()
-  let l:work_dir = s:pwd()
+  let l:work_dir = getcwd()
   for dir in s:started_servers_dirs
     call system("cd " . shellescape(dir) . " && " . s:hdevtools_exe . " --stop-server")
   endfor
@@ -81,7 +76,7 @@ function! s:shutdown_servers()
 endfunction
 
 function s:prepare_shutdown()
-  let l:pwd = s:pwd()
+  let l:pwd = getcwd()
   call system(s:hdevtools_exe . " --status")
 
   " If error appears, this means that server is not running, therfore it will
