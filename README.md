@@ -57,7 +57,7 @@ Moving cursor over lines causes highlighting of relevant expression in source co
 ![](./pictures/moving_around1.png)
 ![](./pictures/moving_around2.png)
 
-Also, text object of highlighted expression is available by `ie` and `ae` (latter also selects space around expression similarly to `aw`). You can, for example, delete current expression with `die` or select with surrounding whitespace by `vae`.
+Also, text object of highlighted expression is available by `ie` and `ae` (latter also selects space around expression similarly to `aw`). You can, for example, delete current expression with `die` or select it with surrounding whitespace by `vae`.
 
 ## Configuration
 This plugin is configured via `g:vim_hs_type_conf` dictionary with such keys:
