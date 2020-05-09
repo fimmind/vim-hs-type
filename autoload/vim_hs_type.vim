@@ -240,6 +240,16 @@ function! s:restore_global_settings()
   let original_global_settings = {}
 endfunction
 
+function! s:leave_infowin()
+  exe "silent! bunload!" s:info_buffer_nr
+  call s:clear_highlight()
+  call s:restore_global_settings()
+  call s:restore_window_dimensions()
+  unlet! s:info_buffer_nr
+  unlet! s:info_window_id
+  unlet! s:source_win_id
+endfunction
+
 " Saving window dimensions
 " ================================================
 function! s:save_window_dimensions()
