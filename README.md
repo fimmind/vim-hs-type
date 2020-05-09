@@ -81,6 +81,11 @@ let g:vim_hs_type_conf = {
       \ }
 ```
 
+## TODO
+
+* Optionally run hdevtools' server on opening Haskell file, but not on firs run
+  of vim_hs_type#type()
+
 ## LICENSE
 * MIT
 
