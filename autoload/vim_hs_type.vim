@@ -161,14 +161,14 @@ function vim_hs_type#type()
 
   autocmd CursorMoved <buffer> call s:rehighlight()
 
-  " Looks like Vim does not support cross-buffer text objects, therefore
-  " expression object works normally only in visual mode.
   if s:config['expression_obj'] != ""
-    exe "vnoremap <buffer> a" . s:config['expression_obj']
-          \ ":call <SID>select_expression('a')<CR>"
-
-    exe "vnoremap <buffer> i" . s:config['expression_obj']
-          \ ":call <SID>select_expression('i')<CR>"
+    for l:mode in ['v', 'o']
+      for l:a_or_i in ['a', 'i']
+        exe l:mode . "noremap <buffer> "
+              \ l:a_or_i . s:config['expression_obj']
+              \ ":call <SID>select_expression('" . l:a_or_i . "')<CR>"
+      endfor
+    endfor
   endif
 endfunction
 
@@ -348,6 +348,8 @@ endfunction
 function! s:select_expression(a_or_i)
   let [l:line1, l:col1, l:line2, l:col2] = s:exprs_ranges[line(".") - 1]
   let l:col2 = l:col2 - 1  " need this, cause hdevtools returns half-open interval
+
+  normal! \<Esc>
   quit
 
   if a:a_or_i == 'a'
