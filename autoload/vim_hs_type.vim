@@ -302,16 +302,6 @@ function! s:restore_window_dimensions()
   call win_gotoid(l:original_win_id)
 endfunction
 
-function! s:leave_infowin()
-  exe "silent! bunload!" s:info_buffer_nr
-  call s:clear_highlight()
-  call s:restore_global_settings()
-  call s:restore_window_dimensions()
-  unlet! s:info_buffer_nr
-  unlet! s:info_window_id
-  unlet! s:source_win_id
-endfunction
-
 " Highlighting
 " ================================================
 function! s:highlight(range)
