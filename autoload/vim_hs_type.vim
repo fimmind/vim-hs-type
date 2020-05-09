@@ -127,7 +127,7 @@ function vim_hs_type#type()
   let l:types = []
   let s:exprs_ranges = []
   for l:output_line in split(l:output, '\n')
-    let l:m = matchlist(l:output_line, '\(\d\+\) \(\d\+\) \(\d\+\) \(\d\+\) "\([^"]\+\)"')
+    let l:m = matchlist(l:output_line, '\v(\d+) (\d+) (\d+) (\d+) "([^"]+)"')
     if len(l:m) != 0
       call add(s:exprs_ranges, l:m[1 : 4])
       call add(l:types, l:m[5])
