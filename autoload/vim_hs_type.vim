@@ -259,7 +259,7 @@ function! s:save_window_dimensions()
   for wininfo in getwininfo()
     if !get(wininfo['variables'], 'float', 0)
       let l:window_dimension = {}
-      for key in ['winid', 'height', 'width']
+      for key in ['winid', 'height', 'width', 'topline']
         let l:window_dimension[key] = wininfo[key]
       endfor
       call add(s:window_dimensions, l:window_dimension)
@@ -297,6 +297,7 @@ function! s:restore_window_dimensions()
     call win_gotoid(wininfo['winid'])
     exe "resize" wininfo['height']
     exe "vertical resize" wininfo['width']
+    exe "normal" wininfo['topline'] . "z\\<CR>"
   endfor
 
   call win_gotoid(l:original_win_id)
