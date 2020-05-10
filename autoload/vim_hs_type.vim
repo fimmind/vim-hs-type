@@ -353,7 +353,7 @@ function! s:select_expression(a_or_i)
   quit
 
   if a:a_or_i == 'a'
-    let l:max_col2 = len(getline(l:line2)) - 1
+    let l:max_col2 = len(getline(l:line2))
     while l:col2 < l:max_col2 && getline(l:line2)[l:col2] =~ '\s'
       let l:col2 = l:col2 + 1
     endwhile
@@ -367,11 +367,13 @@ function! s:select_expression(a_or_i)
     if l:moved_col1 > 1
       let l:col1 = l:moved_col1
 
-      " Do not select one space around expression if possible
-      if getline(l:line2)[l:col2 - 1] =~ '\s'
-        let l:col2 = l:col2 - 1
-      elseif getline(l:line1)[l:col1 - 1] =~ '\s'
-        let l:col1 = l:col1 + 1
+      " Do not select one surrounging space if expression isn't last in line
+      if l:col2 != l:max_col2
+        if getline(l:line1)[l:col1 - 1] =~ '\s'
+          let l:col1 = l:col1 + 1
+        elseif getline(l:line2)[l:col2 - 1] =~ '\s'
+          let l:col2 = l:col2 - 1
+        endif
       endif
     endif
   elseif a:a_or_i != 'i'
