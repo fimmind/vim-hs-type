@@ -376,7 +376,7 @@ function! s:select_expression(a_or_i)
     endif
   elseif a:a_or_i != 'i'
     call s:print_error("Wrong argument for vim_hs_type#select_expression: '" . a:a_or_i . "'")
-    finish
+    return
   endif
 
   call setpos("'<", [0, l:line1, l:col1, 0])
