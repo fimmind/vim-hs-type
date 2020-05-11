@@ -253,7 +253,9 @@ endfunction
 " Saving window dimensions
 " ================================================
 function! s:save_window_dimensions()
-  let s:window_dimensions = {}
+  " Each element of the list s:window_dimensions is a list of 3 integers of
+  " the form: [id, width, height]
+  let s:window_dimensions = []
   for wininfo in getwininfo()
     if !get(wininfo['variables'], 'float', 0)
       let l:window_dimension = {}
