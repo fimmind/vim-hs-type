@@ -1,5 +1,4 @@
-" Messaging
-" ================================================
+" Messaging functions {{{1
 function! s:print_error(msg)
   echohl ErrorMsg
   echomsg "vim-hs-type: " . a:msg
@@ -17,8 +16,7 @@ function! s:print_message(msg)
   echomsg "vim-hs-type: " . a:msg
 endfunction
 
-" Read configuration
-" ================================================
+" Read configuration {{{1
 let s:config = {
       \ 'max_height': 12,
       \ 'dynamic_height': 1,
@@ -35,8 +33,7 @@ for key in keys(s:config)
   endif
 endfor
 
-" Prepare hdevtools
-" ================================================
+" Prepare hdevtools {{{1
 if s:config['hdevtools_from_stack']
   if !executable('stack')
     call s:print_error('stack is not executable')
@@ -97,8 +94,7 @@ function s:prepare_shutdown()
   endif
 endfunction
 
-" Main function
-" ================================================
+" Main function {{{1
 function vim_hs_type#type()
   if &l:modified
     call s:print_error('The buffer has been modified but not written')
@@ -172,8 +168,7 @@ function vim_hs_type#type()
   endif
 endfunction
 
-" Info-window
-" ================================================
+" Info-window {{{1
 "
 " The window code below was originally adapted from the 'Command-T' plugin.
 "
@@ -250,8 +245,7 @@ function! s:leave_infowin()
   unlet! s:source_win_id
 endfunction
 
-" Saving window dimensions
-" ================================================
+" Saving window dimensions {{{1
 function! s:save_window_dimensions()
   let s:window_dimensions = []
   for wininfo in getwininfo()
@@ -301,8 +295,7 @@ function! s:restore_window_dimensions()
   call win_gotoid(l:original_win_id)
 endfunction
 
-" Highlighting
-" ================================================
+" Highlighting {{{1
 function! s:highlight(range)
   call win_gotoid(s:source_win_id)
   if exists("s:matchid")
@@ -342,8 +335,7 @@ function! s:rehighlight()
   endif
 endfunction
 
-" Expression object
-" ================================================
+" Expression object {{{1
 function! s:select_expression(a_or_i)
   let [l:line1, l:col1, l:line2, l:col2] = s:exprs_ranges[line(".") - 1]
   let l:col2 = l:col2 - 1  " need this, cause hdevtools returns half-open interval
@@ -385,3 +377,6 @@ function! s:select_expression(a_or_i)
 
   normal! gv
 endfunction
+" }}}
+
+" vim: fdm=marker
