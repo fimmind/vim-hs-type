@@ -53,8 +53,10 @@ let s:hdevtools_args =
 
 let s:started_servers_dirs = []
 
-function! s:run_hdevtools(command, args)
+function! s:run_hdevtools(message, command, args)
   call s:prepare_shutdown()
+
+  call s:print_message(a:message)
 
   let l:cmd = s:hdevtools_exe
         \ . ' ' . a:command
@@ -65,20 +67,27 @@ endfunction
 
 autocmd VimLeave * call s:shutdown_servers()
 function! s:shutdown_servers()
+  call s:print_message("Shutting down hdevtools' servers")
+
   let l:work_dir = getcwd()
   for dir in s:started_servers_dirs
     call system("cd " . shellescape(dir) . " && " . s:hdevtools_exe . " --stop-server")
   endfor
   call system("cd " . shellescape(l:work_dir))
+
+  call s:print_message("Done")
 endfunction
 
 function s:prepare_shutdown()
+  call s:print_message("Ensuring hdevtools' server is started")
   let l:pwd = getcwd()
   call system(s:hdevtools_exe . " --status")
 
   " If error appears, this means that server is not running, therfore it will
   " by started by the next command, so we need to shutdown it on exit
   if v:shell_error != 0
+    call s:print_message("Starting hdevtools' server")
+
     let l:already_added = 0
 
     for dir in s:started_servers_dirs
@@ -91,6 +100,8 @@ function s:prepare_shutdown()
     if !l:already_added
       call add(s:started_servers_dirs, l:pwd)
     endif
+
+    call system(s:hdevtools_exe . " --start")
   endif
 endfunction
 
@@ -101,8 +112,6 @@ function vim_hs_type#type()
     return
   endif
 
-  call s:print_message("Getting types, wait...")
-
   let l:line = line('.')
   let l:col = col('.')
 
@@ -111,7 +120,7 @@ function vim_hs_type#type()
     call s:print_warning("Current version of plugin doesn't support running on an unnamed buffer.")
     return
   endif
-  let l:output = s:run_hdevtools('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
+  let l:output = s:run_hdevtools('Getting types...', 'type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
 
   if v:shell_error != 0
     for l:error_line in split(l:output, '\n')
