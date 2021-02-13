@@ -83,8 +83,8 @@ function s:prepare_shutdown()
   let l:pwd = getcwd()
   call system(s:hdevtools_exe . " --status")
 
-  " If error appears, this means that server is not running, therfore it will
-  " by started by the next command, so we need to shutdown it on exit
+  " An error indicates that server is not running, therfore it will be started
+  " by the next command, so we need to shutdown it on exit
   if v:shell_error != 0
     call s:print_message("Starting hdevtools' server")
 
@@ -108,7 +108,7 @@ endfunction
 " Main function {{{1
 function vim_hs_type#type()
   if &l:modified
-    call s:print_error('The buffer has been modified but not written')
+    call s:print_error('The buffer is modified. Save it and try again')
     return
   endif
 
